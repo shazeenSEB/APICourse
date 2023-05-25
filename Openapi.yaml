@@ -1,0 +1,137 @@
+openapi: 3.0.1
+info:
+  title: My API
+  version: '1.0'
+  description: Some API for data
+  termsOfService: https://www.example.com/tos
+  contact:
+    email: shazeen.cheema@seb.se
+    name: Support
+    url: https://www.example.com/support
+  license:
+    name: Liecense
+    url: https://www.example.com/license
+servers:
+  - url: https://my-json-server.typicode.com/shazeenSEB/APICourse/{repo}
+    variables:
+      repo:
+        default: APICourse
+        enum:
+          - AnotherServer
+          - DevServer
+          - ProdServer
+        description: APICourse:main;AnotherServer;stage
+    description: git hub reps
+  - url: ' http://localhost:3000'
+    variables: {}
+    description: local server
+paths:
+  /users:
+    summary: fetch and create users
+    description: returns users, stores users
+    get:
+      summary: fetch users from server
+      description: returns users
+      operationId: fetchUsers
+      responses:
+        '200':
+          $ref: '#/components/responses/UserArrayRespBody'
+        default:
+          description: Default error sample response
+      tags:
+        - Users
+    post:
+      summary: create new user
+      description: store user on server
+      operationId: createUser
+      requestBody:
+        $ref: '#/components/requestBodies/UserPostBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/UserRespBody'
+        default:
+          description: Default error sample response
+      tags:
+        - Users
+  /users/{userId}:
+    summary: operations on a individual user
+    description: update, fetch or delete a user
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: user id
+        schema:
+          type: string
+          example: 1234abc
+    get:
+      summary: fetch a user
+      description: return a user from the server
+      operationId: fetchUser
+      parameters:
+      - name: page
+        in: query
+        description: page of fetch
+        schema:
+          type: integer
+          example: 1
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - Users
+    delete:
+      summary: delete a user
+      description: remove a user
+      operationId: deleteUser
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - Users
+components:
+  responses:
+    UserRespBody:
+      description: success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FullUser'
+    UserArrayRespBody:
+      description: user array
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserArray'
+  requestBodies:
+    UserPostBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PostNewUser'
+  schemas:
+    UserArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/FullUser'
+    PostNewUser:
+      type: object
+      properties:
+        username:
+          type: string
+          example: bearc
+        score:
+          type: integer
+          example: 55
+        active:
+          type: boolean
+          example: true
+    FullUser:
+      allOf:
+        - $ref: '#/components/schemas/PostNewUser'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: 1234bac
